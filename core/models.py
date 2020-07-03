@@ -1,6 +1,6 @@
 from django.db import models
 from users.models import User
-
+from django.db.models import Q 
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -45,3 +45,13 @@ class Card(models.Model):
     font = models.CharField(max_length=20, choices=FONT_CHOICES, default='')
     image = models.ImageField(default='default.jpg', upload_to="card_images")
 
+    # def __str__(self):
+    #     return self.user
+
+
+def get_available_cards_for_user(queryset, user):
+    if user.is_authenticated:
+        cards = queryset.filter(Q(user=user))
+    else:
+        cards = None
+    return cards 

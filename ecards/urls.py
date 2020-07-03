@@ -21,7 +21,7 @@ from rest_framework import routers
 from rest_framework.authtoken import views as authtoken_views
 
 router = routers.DefaultRouter()
-router.register('friends', core_views.UserViewSet, basename='user')
+router.register('user', core_views.UserViewSet, basename='user')
 router.register('cards', core_views.CardViewSet, basename='card')
 
 urlpatterns = [
@@ -29,6 +29,7 @@ urlpatterns = [
     path('api/auth/', include('djoser.urls')),
     path('api/', include(router.urls)),
     path('api/auth/', include('djoser.urls.authtoken')),
+    path('api/user_card/<str:username>/', core_views.UserCardView.as_view(), name='my_cards'),
 ]
 
 if settings.DEBUG:
