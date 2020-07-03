@@ -37,10 +37,11 @@ BORDER_CHOICES = {
 # Create your models here.
 
 class Card(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name="cards")
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='cards', null=True)
     message = models.TextField(max_length=500, blank=True, null=True, help_text="Type a greeting here")
     date_field = models.DateTimeField(auto_now_add=True)
     background_color = models.CharField(max_length=20, choices=COLOR_CHOICES, default='')
     border = models.CharField(max_length=20, choices=BORDER_CHOICES, default='')
     font = models.CharField(max_length=20, choices=FONT_CHOICES, default='')
     image = models.ImageField(default='default.jpg', upload_to="card_images")
+

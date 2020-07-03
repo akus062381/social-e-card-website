@@ -89,6 +89,14 @@ Django = ">=2.2"
 
 [[package]]
 category = "main"
+description = "django-friendship provides an easy extensible interface for following and friendship"
+name = "django-friendship"
+optional = false
+python-versions = "*"
+version = "1.9.1"
+
+[[package]]
+category = "main"
 description = "This is a Django library for Heroku apps."
 name = "django-heroku"
 optional = false
@@ -223,7 +231,7 @@ version = "5.1.0"
 brotli = ["brotli"]
 
 [metadata]
-content-hash = "7a6629255c382615c6af232d482bf8975791c8d23beefa0e3d6e64043b2d8938"
+content-hash = "d648baf6ebafd33bc6b1d42bd63878d8de917becdff974038a9553757199aa6d"
 python-versions = "3.7.7"
 
 [metadata.files]
@@ -258,6 +266,10 @@ django-extensions = [
 django-filter = [
     {file = "django-filter-2.3.0.tar.gz", hash = "sha256:11e63dd759835d9ba7a763926ffb2662cf8a6dcb4c7971a95064de34dbc7e5af"},
     {file = "django_filter-2.3.0-py3-none-any.whl", hash = "sha256:616848eab6fc50193a1b3730140c49b60c57a3eda1f7fc57fa8505ac156c6c75"},
+]
+django-friendship = [
+    {file = "django-friendship-1.9.1.tar.gz", hash = "sha256:5b57911ed1645328eb08bdc5eb72a81d1e38fbcb2b1b2ffbed1f9496d576621b"},
+    {file = "django_friendship-1.9.1-py2.py3-none-any.whl", hash = "sha256:f6181620c57c0d9ae1758f48d1c78660a222a96706c1a2c041e9f7b219eb1a12"},
 ]
 django-heroku = [
     {file = "django-heroku-0.3.1.tar.gz", hash = "sha256:6af4bc3ae4a9b55eaad6dbe5164918982d2762661aebc9f83d9fa49f6009514e"},

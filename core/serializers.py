@@ -7,7 +7,10 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'url', 'username',]
+        fields = ['id', 'url', 'username', 'password', 'friend']
+    
+
+
 
 class CardSerializer(serializers.HyperlinkedModelSerializer):
 

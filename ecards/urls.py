@@ -21,7 +21,7 @@ from rest_framework import routers
 from rest_framework.authtoken import views as authtoken_views
 
 router = routers.DefaultRouter()
-# router.register('friends', core_views.UserViewSet, basename='user')
+router.register('friends', core_views.UserViewSet, basename='user')
 router.register('cards', core_views.CardViewSet, basename='card')
 
 urlpatterns = [
