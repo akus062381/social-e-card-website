@@ -13,6 +13,7 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class CardSerializer(serializers.HyperlinkedModelSerializer):
+    user = serializers.StringRelatedField()
 
     class Meta:
         model = Card

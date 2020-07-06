@@ -9,17 +9,6 @@ from rest_framework import filters
 from rest_framework.response import Response 
 from rest_framework.decorators import action
 
-# Create your views here.
-
-# class IsOwnerOrReadOnly(permissions.BasePermission):
-#     def has_permission(self, request, view):
-#         return bool(request.method in permissions.SAFE_METHODS
-#                     or (request.user and request.user.is_authenticated))
-    
-#     def has_object_permission(self, request, view, obj):
-#         return bool(request.user and request.user.is_authenticated
-#                     and obj.user == request.user)
-
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
@@ -27,10 +16,9 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_class = [permissions.IsAuthenticated]
 
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
-    def my_friends(self, request, friend, format=None):
-        user = get_object_or_404(User, friend)
-        # friends = request.user.friend.all()
-        serializer = UserSerializer(user.friends.filter(), many=True, context={'request': request})
+    def my_friends(self, request):
+        friends = request.user.friend.all()
+        serializer = UserSerializer(friends, many=True, context={'request': request})
         return Response(serializer.data)
 
 class UserCardView(views.APIView):
