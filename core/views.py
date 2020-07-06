@@ -7,7 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend, OrderingFilter
 from rest_framework import filters
 from rest_framework.response import Response 
-from rest_framework.decorators import action
+from rest_framework.decorators import action, api_view
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -16,10 +16,17 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_class = [permissions.IsAuthenticated]
 
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
+    def info(self, request):
+        user = request.user
+        serializer = UserSerializer(user, context={'request': request})
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
     def my_friends(self, request):
-        friends = request.user.friend.all()
+        friends = request.user.friend.filter()
         serializer = UserSerializer(friends, many=True, context={'request': request})
         return Response(serializer.data)
+
 
 class UserCardView(views.APIView):
     def get(self, request, username, format=None):
