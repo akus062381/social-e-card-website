@@ -6,5 +6,5 @@ from django.contrib.auth.models import AbstractUser
 
 
 class User(AbstractUser):
-    friend = models.ManyToManyField("self", related_name="users")
+    friend = models.ManyToManyField("self", related_name="users", blank=True, symmetrical=False)
     
