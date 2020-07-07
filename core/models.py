@@ -37,7 +37,7 @@ BORDER_CHOICES = {
 # Create your models here.
 
 class Card(models.Model):
-    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='cards', null=True)
+    username = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='cards', null=True)
     title = models.CharField(max_length=200, blank=True, null=True)
     message = models.TextField(max_length=500, blank=True, null=True, help_text="Type a greeting here")
     date_field = models.DateTimeField(auto_now_add=True)
