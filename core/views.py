@@ -20,6 +20,14 @@ class UserViewSet(viewsets.ModelViewSet):
         user = request.user
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data)
+    
+    # @action(detail=False, methods=['GET', 'POST'], permission_classes=[permissions.IsAuthenticated])
+    # def friend(self, request):
+    #     name_of_user = request.data.get('username')
+    #     user_to_follow = User.objects.get(username=name_of_user)
+    #     new_friend = request.user.friend.add(user_to_follow)
+    #     serializer = UserSerializer(new_friend, context={'request': request})
+    #     return Response(serializer.data)
 
     @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
     def my_friends(self, request):
@@ -33,17 +41,27 @@ class UserViewSet(viewsets.ModelViewSet):
         serializer = UserSerializer(followers, many=True, context={'request': request})
         return Response(serializer.data)
 
-class FollowFriendAdd(views.APIView):
+class FriendView(views.APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    def get(self, request, format=None):
+        friends = [user.username for user in request.user.friend.all()]
+        return Response(friends)
+
     def post(self, request, format=None):
-        name_of_user = request.data['username']
-        user_to_follow = User.objects.get(username=name_of_user)
+        user_name = request.data.get('user')
+        user_to_follow = User.objects.get(username=user_name)
         current_user = request.user
         current_user.friend.add(user_to_follow)
         return Response({"friend_count": current_user.friend.count()})
 
+class RemoveFriendView(views.APIView):
+    permission_classes = [permissions.IsAuthenticated]
 
+    def post(self, request, friend_username, format=None):
+        user_to_remove = get_object_or_404(request.user.friend,username=friend_username)
+        request.user.friend.remove(user_to_remove)
+        return Response(request.data)
 
 
 class CardViewSet(viewsets.ModelViewSet):
