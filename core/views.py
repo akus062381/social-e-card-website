@@ -10,19 +10,12 @@ from rest_framework.response import Response
 from rest_framework.decorators import action, api_view
 
 
-class IsOwnerOrReadOnly(permissions.BasePermission):
-    def has_permission(self, request, view):
-        return bool(request.method in permissions.SAFE_METHODS
-                or (request.user and request.user.is_authenticated))
-    
-    def has_object_permission(self, request, view, obj):
-        return bool(request.user and request.user.is_authenticated)
 
-
-class UserViewSet(viewsets.ModelViewSet):
+class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsOwnerOrReadOnly,]
+    permission_classes = [IsAuthenticated]
+   
 
     @action(detail=False, methods=['GET'])
     def info(self, request):
@@ -44,8 +37,8 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 
-class FriendView(views.APIView):
-    permission_classes = [IsOwnerOrReadOnly,]
+class FriendListView(views.APIView):
+    permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
         friends = [user.username for user in request.user.friend.all()]
@@ -59,20 +52,27 @@ class FriendView(views.APIView):
         return Response({"friend_count": current_user.friend.count()})
 
 
-class RemoveFriendView(views.APIView):
-    permission_classes = [IsOwnerOrReadOnly,]
+class FriendDetailView(views.APIView):
+    permission_classes = [IsAuthenticated]
 
-    def post(self, request, friend_username, format=None):
+    def delete(self, request, friend_username, format=None):
         user_to_remove = get_object_or_404(request.user.friend,username=friend_username)
         request.user.friend.remove(user_to_remove)
         return Response(request.data)
-
+    
+    def get(self, request, friend_username, format=None):
+        user_to_view = get_object_or_404(request.user.friend,username=friend_username)
+        serializer = UserSerializer(user_to_view, context={'request': request})
+        return Response(serializer.data)
 
 
 class CardViewSet(viewsets.ModelViewSet):
-    queryset = Card.objects.all()
     serializer_class = CardSerializer
-    permission_classes = [IsOwnerOrReadOnly,]
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        cards = self.request.user.cards.all()
+        return cards
 
     @action(detail=False, methods=['GET'])
     def my_cards(self, request):
@@ -97,6 +97,16 @@ class CardViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def followers_cards(self, request):
         cards = Card.objects.filter(username__in=request.user.fans.all())
+        page = self.paginate_queryset(cards)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = CardSerializer(cards, many=True, context={'request': request})
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['GET'])
+    def all_cards(self, request):
+        cards = Card.objects.all()
         page = self.paginate_queryset(cards)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
