@@ -16,14 +16,13 @@ class IsOwnerOrReadOnly(permissions.BasePermission):
                 or (request.user and request.user.is_authenticated))
     
     def has_object_permission(self, request, view, obj):
-        return bool(request.user and request.user.is_authenticated
-                and obj.user == request.user)
+        return bool(request.user and request.user.is_authenticated)
 
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly,]
 
     @action(detail=False, methods=['GET'])
     def info(self, request):
@@ -46,7 +45,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 
 class FriendView(views.APIView):
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly,]
 
     def get(self, request, format=None):
         friends = [user.username for user in request.user.friend.all()]
@@ -61,7 +60,7 @@ class FriendView(views.APIView):
 
 
 class RemoveFriendView(views.APIView):
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly,]
 
     def post(self, request, friend_username, format=None):
         user_to_remove = get_object_or_404(request.user.friend,username=friend_username)
@@ -73,7 +72,7 @@ class RemoveFriendView(views.APIView):
 class CardViewSet(viewsets.ModelViewSet):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
-    permission_classes = [IsOwnerOrReadOnly]
+    permission_classes = [IsOwnerOrReadOnly,]
 
     @action(detail=False, methods=['GET'])
     def my_cards(self, request):
