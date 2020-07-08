@@ -23,6 +23,8 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data)
 
+    
+
     @action(detail=False, methods=['GET'])
     def my_friends(self, request):
         friends = request.user.friend.filter()
@@ -65,10 +67,22 @@ class FriendDetailView(views.APIView):
         serializer = UserSerializer(user_to_view, context={'request': request})
         return Response(serializer.data)
 
+class CardDetailView(views.APIView):
+    queryset = Card.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, card_id):
+        card_to_show = get_object_or_404(Card, id=card_id)
+        serializer = CardSerializer(card_to_show, context={'request': request})
+        return Response(serializer.data)
 
 class CardViewSet(viewsets.ModelViewSet):
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(username=self.request.user)
+
 
     def get_queryset(self):
         cards = self.request.user.cards.all()

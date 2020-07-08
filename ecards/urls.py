@@ -31,6 +31,7 @@ urlpatterns = [
     path('api/auth/', include('djoser.urls.authtoken')),
     path('api/friends/', core_views.FriendListView.as_view()),
     path('api/friend/<friend_username>/', core_views.FriendDetailView.as_view()),
+    path('api/card_detail/<card_id>/', core_views.CardDetailView.as_view()),
 ]
 
 if settings.DEBUG:

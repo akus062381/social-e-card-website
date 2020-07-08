@@ -47,7 +47,7 @@ class Card(models.Model):
     image = models.ImageField(default='default.jpg', upload_to="card_images")
 
     # def __str__(self):
-    #     return self.user
+    #     return self.username.username
 
 
 def get_available_cards_for_user(queryset, user):
