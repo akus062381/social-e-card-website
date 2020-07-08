@@ -11,27 +11,27 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
-COLOR_CHOICES = {
+COLOR_CHOICES = (
     ('LightSkyBlue', 'LightSkyBlue'),
     ('PaleGreen', 'PaleGreen'),
     ('Lavender', 'Lavender'),
     ('LightSalmon', 'LightSalmon'),
-}
+)
 
-FONT_CHOICES = {
+FONT_CHOICES = (
     ('Perpetua', 'Perpetua'),
     ('Copperplate', 'Copperplate'),
     ('Cambria', 'Cambria'),
     ('Arial', 'Arial'),
     ('Verdana', 'Verdana'),
-}
+)
 
-BORDER_CHOICES = {
+BORDER_CHOICES = (
     ('NoBorder', 'NoBorder'),
     ('DottedBorder', 'DottedBorder'),
     ('DashedBorder', 'DashedBorder'),
     ('SolidBorder', 'SolidBorder'),
-}
+)
 
 
 # Create your models here.
@@ -41,9 +41,9 @@ class Card(models.Model):
     title = models.CharField(max_length=200, blank=True, null=True)
     message = models.TextField(max_length=500, blank=True, null=True, help_text="Type a greeting here")
     date_field = models.DateTimeField(auto_now_add=True)
-    background_color = models.CharField(max_length=20, choices=COLOR_CHOICES, default='')
-    border = models.CharField(max_length=20, choices=BORDER_CHOICES, default='')
-    font = models.CharField(max_length=20, choices=FONT_CHOICES, default='')
+    background_color = models.CharField(max_length=20, choices=COLOR_CHOICES, default='LightSkyBlue')
+    border = models.CharField(max_length=20, choices=BORDER_CHOICES, default='NoBorder')
+    font = models.CharField(max_length=20, choices=FONT_CHOICES, default='Perpetua')
     image = models.ImageField(default='default.jpg', upload_to="card_images")
 
     # def __str__(self):

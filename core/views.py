@@ -10,39 +10,43 @@ from rest_framework.response import Response
 from rest_framework.decorators import action, api_view
 
 
+class IsOwnerOrReadOnly(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return bool(request.method in permissions.SAFE_METHODS
+                or (request.user and request.user.is_authenticated))
+    
+    def has_object_permission(self, request, view, obj):
+        return bool(request.user and request.user.is_authenticated
+                and obj.user == request.user)
+
+
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_class = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly]
 
-    @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=False, methods=['GET'])
     def info(self, request):
         user = request.user
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data)
-    
-    # @action(detail=False, methods=['GET', 'POST'], permission_classes=[permissions.IsAuthenticated])
-    # def friend(self, request):
-    #     name_of_user = request.data.get('username')
-    #     user_to_follow = User.objects.get(username=name_of_user)
-    #     new_friend = request.user.friend.add(user_to_follow)
-    #     serializer = UserSerializer(new_friend, context={'request': request})
-    #     return Response(serializer.data)
 
-    @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=False, methods=['GET'])
     def my_friends(self, request):
         friends = request.user.friend.filter()
         serializer = UserSerializer(friends, many=True, context={'request': request})
         return Response(serializer.data)
     
-    @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=False, methods=['GET'])
     def my_followers(self, request):
         followers = request.user.fans.filter()
         serializer = UserSerializer(followers, many=True, context={'request': request})
         return Response(serializer.data)
 
+
+
 class FriendView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def get(self, request, format=None):
         friends = [user.username for user in request.user.friend.all()]
@@ -55,8 +59,9 @@ class FriendView(views.APIView):
         current_user.friend.add(user_to_follow)
         return Response({"friend_count": current_user.friend.count()})
 
+
 class RemoveFriendView(views.APIView):
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly]
 
     def post(self, request, friend_username, format=None):
         user_to_remove = get_object_or_404(request.user.friend,username=friend_username)
@@ -64,12 +69,13 @@ class RemoveFriendView(views.APIView):
         return Response(request.data)
 
 
+
 class CardViewSet(viewsets.ModelViewSet):
     queryset = Card.objects.all()
     serializer_class = CardSerializer
-    permission_class = [permissions.IsAuthenticated]
+    permission_classes = [IsOwnerOrReadOnly]
 
-    @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=False, methods=['GET'])
     def my_cards(self, request):
         cards = request.user.cards.all()
         page = self.paginate_queryset(cards)
@@ -79,7 +85,7 @@ class CardViewSet(viewsets.ModelViewSet):
         serializer = CardSerializer(cards, many=True, context={'request': request})
         return Response(serializer.data)
 
-    @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=False, methods=['GET'])
     def friends_cards(self, request):
         cards = Card.objects.filter(username__in=request.user.friend.all())
         page = self.paginate_queryset(cards)
@@ -89,7 +95,7 @@ class CardViewSet(viewsets.ModelViewSet):
         serializer = CardSerializer(cards, many=True, context={'request': request})
         return Response(serializer.data)
 
-    @action(detail=False, methods=['GET'], permission_classes=[permissions.IsAuthenticated])
+    @action(detail=False, methods=['GET'])
     def followers_cards(self, request):
         cards = Card.objects.filter(username__in=request.user.fans.all())
         page = self.paginate_queryset(cards)
