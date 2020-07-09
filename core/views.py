@@ -12,18 +12,21 @@ from rest_framework.decorators import action, api_view
 
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This view shows all existing users of the application.
+    The user can view and edit their individual profile information.
+    The user can view their friends (users they follow).
+    The user can see who follows them.
+    """
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated]
    
-
-    @action(detail=False, methods=['GET'])
+    @action(detail=False, methods=['GET', 'PATCH'])
     def info(self, request):
         user = request.user
         serializer = UserSerializer(user, context={'request': request})
         return Response(serializer.data)
-
-    
 
     @action(detail=False, methods=['GET'])
     def my_friends(self, request):
@@ -40,6 +43,10 @@ class UserViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class FriendListView(views.APIView):
+    """
+    In this view, a user can see a list of people they are friends with, as well as 
+    add a friend to their list.
+    """
     permission_classes = [IsAuthenticated]
 
     def get(self, request, format=None):
@@ -55,6 +62,10 @@ class FriendListView(views.APIView):
 
 
 class FriendDetailView(views.APIView):
+    """
+    In this view, a user can view the profile for a person they follow, as well as 
+    delete that user from their friend list.
+    """
     permission_classes = [IsAuthenticated]
 
     def delete(self, request, friend_username, format=None):
@@ -68,6 +79,9 @@ class FriendDetailView(views.APIView):
         return Response(serializer.data)
 
 class CardDetailView(views.APIView):
+    """
+    In this view, a user can view a single card and its attributes.
+    """
     queryset = Card.objects.all()
     permission_classes = [IsAuthenticated]
 
@@ -77,12 +91,16 @@ class CardDetailView(views.APIView):
         return Response(serializer.data)
 
 class CardViewSet(viewsets.ModelViewSet):
+    """
+    In this view, a user is able to create a card, see a list of all cards they've created,
+    as well as a list of all cards in the app. They can also see a list of cards created
+    by the people they're following, and cards created by people who follow them.
+    """
     serializer_class = CardSerializer
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
         serializer.save(username=self.request.user)
-
 
     def get_queryset(self):
         cards = self.request.user.cards.all()
